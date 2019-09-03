@@ -67,7 +67,7 @@ run: build
 
 release-binaries: build go-get-xgo
 	mkdir -p ./build/xgo
-	go run github.com/karalabe/xgo -out='build/xgo/gsn-relay' --targets='$(platforms)' -v ./src/relay
+	./bin/xgo -out='build/xgo/gsn-relay' --targets='$(platforms)' -v ./src/relay
 	mv -f ./build/xgo/* $(buildpath)/bin/
 	rm -rf ./build/xgo
 
