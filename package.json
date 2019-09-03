@@ -8,7 +8,8 @@
     "type": "git"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "upgrade": "./scripts/upgrade-relayer.sh"
   },
   "devDependencies": {
     "@openzeppelin/cli": "^2.5.2",
