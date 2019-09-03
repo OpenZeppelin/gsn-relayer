@@ -88,7 +88,7 @@ type IRelay interface {
 
 	IsUnstaked() (removed bool, err error)
 
-	RegistrationDate() (when int64, err error)
+	BlockCountSinceRegistration() (when uint64, err error)
 
 	IsRemoved() (removed bool, err error)
 
@@ -324,7 +324,6 @@ func (relay *RelayServer) IsUnstaked() (removed bool, err error) {
 	return true, nil
 }
 
-
 func (relay *RelayServer) BlockCountSinceRegistration() (count uint64, err error) {
 	lastBlockHeader, err := relay.Client.HeaderByNumber(context.Background(), nil)
 	if err != nil {
@@ -332,29 +331,26 @@ func (relay *RelayServer) BlockCountSinceRegistration() (count uint64, err error
 		return
 	}
 	startBlock := uint64(0)
-	if lastBlockHeader.Number.Uint64() > relay.RegistrationBlockRate {
+	lastBlockNumber := lastBlockHeader.Number.Uint64()
+	if lastBlockNumber > relay.RegistrationBlockRate {
 		startBlock = lastBlockHeader.Number.Uint64() - relay.RegistrationBlockRate
 	}
 	filterOpts := &bind.FilterOpts{
 		Start: startBlock,
-		End:   nil,
+		End:   &lastBlockNumber,
 	}
 	iter, err := relay.rhub.FilterRelayAdded(filterOpts, []common.Address{relay.Address()}, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-
+	// We only care about the last registration event
+	for iter.Next() {}
 	if (iter.Event == nil && !iter.Next()) ||
 		(bytes.Compare(iter.Event.Relay.Bytes(), relay.Address().Bytes()) != 0) ||
 		(iter.Event.TransactionFee.Cmp(relay.Fee) != 0) ||
 		(iter.Event.Url != relay.Url) {
-		return 0, fmt.Errorf("Could not receive RelayAdded() events for our relay")
-	}
-	lastRegisteredHeader, err := relay.Client.HeaderByNumber(context.Background(), big.NewInt(int64(iter.Event.Raw.BlockNumber)))
-	if err != nil {
-		log.Println(err)
-		return
+		return 0, fmt.Errorf("Could not receive RelayAdded events for our relay")
 	}
 
 	count = lastBlockNumber - iter.Event.Raw.BlockNumber
