@@ -19,7 +19,7 @@ ganache_running() {
 }
 
 start_ganache() {
-  npx ganache-cli --networkId 4447 -g 1000 -p $ganache_port -d > /dev/null &
+  npx ganache-cli --port $ganache_port --networkId 4447 --gasPrice 1000 --deterministic > /dev/null &
   ganache_pid=$!
 
   while ! ganache_running; do

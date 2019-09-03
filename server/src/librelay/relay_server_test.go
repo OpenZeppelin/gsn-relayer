@@ -301,7 +301,7 @@ func newRelayTransactionRequest(t *testing.T, recipientNonce int64, signature st
 	}
 
 	// Uncomment the following line to print the commands to generate the signature that needs to be injected
-	// printSignature(txb, txFee, gasPrice, gasLimit, relayMaxNonce, recipientNonce)
+	printSignature(txb, txFee, gasPrice, gasLimit, relayMaxNonce, recipientNonce)
 
 	return RelayTransactionRequest{
 		EncodedFunction: txb,

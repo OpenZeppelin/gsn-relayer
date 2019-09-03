@@ -15,5 +15,10 @@
     "@openzeppelin/contracts": "^2.4.0-beta.2",
     "@openzeppelin/gsn-helpers": "^0.1.9",
     "ganache-cli": "^6.6.0"
+  },
+  "dependencies": {
+    "eth-crypto": "^1.4.0",
+    "ethereumjs-util": "^6.1.0",
+    "web3-utils": "^1.2.1"
   }
 }
