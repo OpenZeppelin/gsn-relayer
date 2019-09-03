@@ -1,4 +1,3 @@
-
 pwd=$(shell pwd)
 buildpath=$(pwd)/../build/server
 server_exe=$(buildpath)/bin/RelayHttpServer
@@ -13,10 +12,8 @@ ETHREPO="https://github.com/ethereum/go-ethereum.git"
 ETHVERSION=v1.8.21
 
 GEN_FILE=$(buildpath)/src/gen/librelay/relay_hub_sol.go
-GEN_FILE_REC=$(buildpath)/src/gen/samplerec/sample_rec_sol.go
-RELAYHUB_BIN=$(buildpath)/../contracts/RelayHub.json
-RELAYHUB_ABI=$(buildpath)/../contracts/IRelayHub.json
-TRUFFLE_OUT_REC=$(buildpath)/../contracts/SampleRecipient.json
+RELAYHUB_JSON=$(buildpath)/../contracts/IRelayHub.json
+RELAYHUB_ABI=$(buildpath)/../contracts/IRelayHub.abi
 
 $(server_exe): $(GEN_FILE) $(GEN_FILE_REC) go-get $(ETHFILE) $() $(shell find . -maxdepth 3 -name '*.go') Makefile
 	echo "Using GOPATH=$(GOPATH)"
@@ -37,22 +34,15 @@ $(ETHFILE): Makefile
 
 gen-file: $(GEN_FILE) Makefile
 
-$(RELAYHUB_BIN): ../contracts/IRelayHub.sol ../contracts/RelayHub.sol ../contracts/SampleRecipient.sol
-	cd ../ && npx truffle compile
-	mkdir -p $(buildpath)/contracts
-	./scripts/get_abi_bin.js
+$(RELAYHUB_JSON): ../contracts/IRelayHub.sol
+	cd ../ && npx oz compile
 
-$(RELAYHUB_ABI): $(RELAYHUB_BIN)
+$(RELAYHUB_ABI): $(RELAYHUB_JSON)
+	./scripts/get_abi_bin.js IRelayHub
 
-$(TRUFFLE_OUT_REC): $(RELAYHUB_BIN)
-
-$(GEN_FILE): ../contracts/IRelayHub.sol $(RELAYHUB_BIN) $(RELAYHUB_ABI)
+$(GEN_FILE): $(RELAYHUB_ABI)
 	mkdir -p $(buildpath)/src/gen/librelay
-	abigen --solc ../node_modules/.bin/solcjs --abi $(subst contracts,server/contracts,$(RELAYHUB_ABI:json=abi)) --bin $(subst contracts,server/contracts,$(RELAYHUB_BIN:json=bin)) --pkg librelay --type IRelayHub --out $@
-
-$(GEN_FILE_REC): ../contracts/SampleRecipient.sol $(TRUFFLE_OUT_REC)
-	mkdir -p $(buildpath)/src/gen/samplerec
-	abigen --solc ../node_modules/.bin/solcjs --abi $(subst contracts,server/contracts,$(TRUFFLE_OUT_REC:json=abi)) --bin $(subst contracts,server/contracts,$(TRUFFLE_OUT_REC:json=bin)) --pkg samplerec --type SampleRecipient --out $@
+	abigen --solc ../node_modules/.bin/solcjs --abi $(RELAYHUB_ABI) --pkg librelay --type IRelayHub --out $@
 
 test: server
 	@scripts/test.sh

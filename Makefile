@@ -1,10 +1,7 @@
-all: build-server build-abis
+all: build
 
-build-server:
+build:
 	make -C server
 
-test-server:
+test:
 	make -C server test
-
-build-abis:
-	./scripts/extract_abi.js

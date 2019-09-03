@@ -1,20 +1,9 @@
 #!/usr/bin/env node
 
-var fs = require("fs");
+const { readFileSync, writeFileSync } = require("fs");
 
-var contractsToExtract =[ "IRelayHub", "RelayHub", "SampleRecipient" ];
+const contract = process.argv[2];
+console.log(`Extracting ABI for ${contract}`);
 
-// var rhub = require("../../build/contracts/IRelayHub.json");
-// var sampleRec = require("../../build/contracts/SampleRecipient.json");
-
-contractsToExtract.forEach( name => {
-    let contract = require("../../build/contracts/"+name+".json");
-
-    fs.writeFileSync("../build/server/contracts/"+name+".abi", JSON.stringify(contract.abi));
-    fs.writeFileSync("../build/server/contracts/"+name+".bin", contract.bytecode);
-});
-
-// fs.writeFileSync("../build/contracts/IRelayHub.abi", JSON.stringify(rhub.abi));
-// fs.writeFileSync("../build/contracts/IRelayHub.bin", JSON.stringify(rhub.bytecode));
-// fs.writeFileSync("../build/contracts/SampleRecipient.abi", JSON.stringify(sampleRec.abi));
-// fs.writeFileSync("../build/contracts/SampleRecipient.bin", JSON.stringify(sampleRec.bytecode));
+const artifact = JSON.parse(readFileSync(`../build/contracts/${contract}.json`));
+writeFileSync(`../build/contracts/${contract}.abi`, JSON.stringify(artifact.abi));
