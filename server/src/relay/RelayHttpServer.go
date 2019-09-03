@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-const VERSION = "0.4.1"
+const VERSION = "0.4.2-oz"
 
 var KeystoreDir = filepath.Join(os.Getenv("PWD"), "data/keystore")
 var delayBetweenRegistrations = 24 * int64(time.Hour/time.Second) // time.Duration is in nanosec - converting to sec like unix
