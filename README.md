@@ -2,20 +2,21 @@
 
 ## Build
 
-### Install dependencies
+### Setup
 
-Install node packages:
-```bash
-$ yarn
-```
-
-Install `abigen`:
+Install [yarn](https://yarnpkg.com/lang/en/docs/install) and other dependencies:
 
 ```bash
 $ sudo add-apt-repository -y ppa:ethereum/ethereum
 $ sudo apt update
-$ sudo apt install abigen
+$ sudo apt install build-essential golang abigen
 ```
+
+Install Node packages:
+```bash
+$ yarn
+```
+
 ### Compile
 
 ```bash
@@ -26,4 +27,10 @@ $ make build
 
 ```bash
 $ make test
+```
+
+## Run
+
+```bash
+$ make run
 ```

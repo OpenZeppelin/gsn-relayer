@@ -11,6 +11,9 @@
     "test": "make test"
   },
   "devDependencies": {
-    "@openzeppelin/cli": "^2.5.2"
+    "@openzeppelin/cli": "^2.5.2",
+    "@openzeppelin/contracts": "^2.4.0-beta.2",
+    "@openzeppelin/gsn-helpers": "^0.1.9",
+    "ganache-cli": "^6.6.0"
   }
 }

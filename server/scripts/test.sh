@@ -1,18 +1,42 @@
 #!/bin/bash -e
-TESTPORT=8543
-TESTADDRS=0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1,0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0,0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b
+
+# Exit script as soon as a command fails.
+set -o errexit
 
 trap onexit EXIT
 
+ganache_port=8545
+
 onexit() {
-  if [ -f "ganache.pid" ]; then 
-    echo "Stopping ganache"
-    kill `cat ganache.pid` && rm ganache.pid 
+  # Kill the ganache instance that we started (if we started one and if it's still running).
+  if [ -n "$ganache_pid" ] && ps -p $ganache_pid > /dev/null; then
+    kill -9 $ganache_pid
   fi
 }
 
-cd .. && \
-  ./scripts/run-ganache ${TESTPORT} > ganache.pid
+ganache_running() {
+  nc -z localhost "$ganache_port"
+}
+
+start_ganache() {
+  npx ganache-cli --networkId 4447 -g 1000 -p $ganache_port -d > /dev/null &
+  ganache_pid=$!
+
+  while ! ganache_running; do
+    sleep 0.1
+  done
+}
+
+if ganache_running; then
+  echo "Using existing ganache instance" >&2
+else
+  echo "Starting our own ganache instance" >&2
+  start_ganache
+fi
+
+echo `npx ganache-cli --version` >&2
+
+npx oz-gsn deploy-relay-hub
 
 go test -v -count=1 librelay
 go test -v -count=1 librelay/txstore

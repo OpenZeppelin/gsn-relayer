@@ -3,7 +3,6 @@ package librelay
 import (
 	"context"
 	"crypto/ecdsa"
-	"encoding/hex"
 	"errors"
 	"flag"
 	"fmt"
@@ -140,7 +139,7 @@ var rhaddr common.Address
 var boundHub *bind.BoundContract
 var boundRecipient *bind.BoundContract
 
-var ethereumNodeURL = "http://localhost:8543"
+var ethereumNodeURL = "http://localhost:8545"
 
 func InitTestClient(url string) {
 	relayKey1, _ = crypto.HexToECDSA("4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d")
@@ -184,28 +183,16 @@ func NewRelay(relayHubAddress common.Address) {
 }
 
 func TestMain(m *testing.M) {
+	rhaddr = common.HexToAddress("0xD216153c06E857cD7f72665E0aF1d7D82172F494")
+
 	InitTestClient(ethereumNodeURL)
-	parsed, err := abi.JSON(strings.NewReader(librelay.IRelayHubABI))
-	if err != nil {
-		log.Fatalln(err)
-	}
 
-	RelayHubBin := librelay.IRelayHubBin
-
-	if _, err = hex.DecodeString(RelayHubBin[2:]); err != nil {
-		log.Println("RelayHubBin", RelayHubBin)
-		log.Fatalln("Invalid hex: RelayHubBin", err)
-	}
-	rhaddr, _, boundHub, err = bind.DeployContract(auth, parsed, common.FromHex(RelayHubBin), client)
-	if err != nil {
-		log.Fatalf("could not deploy contract: %v", err)
-	}
-	parsed, err = abi.JSON(strings.NewReader(samplerec.SampleRecipientABI))
+	parsed, err := abi.JSON(strings.NewReader(samplerec.SampleRecipientABI))
 	if err != nil {
 		log.Fatalln(err)
 	}
 	auth.GasLimit = 4000000
-	sampleRecipient, _, boundRecipient, err = bind.DeployContract(auth, parsed, common.FromHex(samplerec.SampleRecipientBin), client, rhaddr)
+	sampleRecipient, _, boundRecipient, err = bind.DeployContract(auth, parsed, common.FromHex(samplerec.SampleRecipientBin), client)
 	if err != nil {
 		log.Fatalln("Error deploying SampleRecipient contract:", err)
 	}
@@ -213,7 +200,8 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Printf("RelayHub:  %s\nRecipient: %s\n", rhaddr.String(), sampleRecipient.String())
+	fmt.Printf("Recipient: %s\n", sampleRecipient.String())
+
 	NewRelay(rhaddr)
 
 	tx, err := relay.sendStakeTransaction(ownerKey3, stakeAmount, unstakeDelay)
