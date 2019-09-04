@@ -47,11 +47,11 @@ $(MOCK_RECIPIENT_JSON): ../contracts/MockRecipient.sol
 	cd ../ && npx oz compile
 
 $(ETHFILE): Makefile
-	@echo "Downloading the ethereum library. Might take a few minutes."
 	@if [ ! -d ${ETHDIR} ]; then \
+	  echo "Downloading the ethereum library. Might take a few minutes.";\
 	  git clone ${ETHREPO} --depth=1 --branch=${ETHVERSION} ${ETHDIR} ;\
-	  go get -v -d ./...;\
 	fi
+	go get -v -d ./...;
 	touch $(ETHFILE)
 
 go-get-deps: $(RELAYHUB_BINDING) $(ETHFILE)
