@@ -324,7 +324,7 @@ func keepAlive() {
 	count, err := relay.BlockCountSinceRegistration()
 	if err != nil {
 		log.Println(err)
-	} else if count < RegistrationBlockRate {
+	} else if count < (RegistrationBlockRate - 500) {
 		log.Println("Relay registered lately: ", count, " blocks ago")
 		return
 	}
