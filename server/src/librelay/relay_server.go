@@ -256,7 +256,7 @@ func (relay *RelayServer) RegisterRelay() (err error) {
 }
 
 func (relay *RelayServer) sendRegisterTransaction() (tx *types.Transaction, err error) {
-	desc := fmt.Sprintf("RegisterRelay(address=%s, url=%s)", relay.RelayHubAddress.Hex(), relay.Url)
+	desc := fmt.Sprintf("RegisterRelay(address=%s, url=%s)", relay.Address().Hex(), relay.Url)
 	tx, err = relay.sendDataTransaction(desc, func(auth *bind.TransactOpts) (*types.Transaction, error) {
 		return relay.rhub.RegisterRelay(auth, relay.Fee, relay.Url)
 	})
