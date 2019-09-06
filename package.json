@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "make test",
-    "upgrade": "./scripts/upgrade-relayer.sh"
+    "upgrade": "./scripts/upgrade-relayer.sh",
+    "upgrade-all": "./scripts/upgrade-all.sh"
   },
   "devDependencies": {
     "@openzeppelin/cli": "^2.5.2",

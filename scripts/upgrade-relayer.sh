@@ -11,14 +11,14 @@ pause() {
 
 echo "Will upgrade relayer at $relayer"
 
-echo "Connect via ssh to the relayer ('ssh ubuntu@$relayer') and run 'sudo systemctl stop relayer'"
-pause
+echo "Stopping relayer service"
+ssh ubuntu@$relayer 'sudo systemctl stop relayer'
 
 echo "Uploading new binary"
 
-rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress build/server/bin/RelayHttpServer  ubuntu@$relayer:/app/bin/RelayHttpServer
+rsync -avz -e "ssh -o StrictHostKeyChecking=no" --progress build/server/bin/RelayHttpServer  ubuntu@$relayer:/app/bin/RelayHttpServer
 
-echo "Update complete. Run 'sudo systemctl restart relayer' on the relayer"
-pause
+echo "Upload complete"
 
-echo "Run 'journalctl -u relayer -r' on the relayer to view logs and check status"
+echo "Restarting relayer service"
+ssh ubuntu@$relayer 'sudo systemctl restart relayer'
