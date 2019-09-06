@@ -25,7 +25,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-const TxReceiptTimeout = 60 * time.Second
+const TxReceiptTimeout = 120 * time.Second
 
 var lastNonce uint64 = 0
 var nonceMutex = &sync.Mutex{}
