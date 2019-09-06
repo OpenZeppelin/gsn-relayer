@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-const VERSION = "0.4.3-oz"
+const VERSION = "0.4.4-oz"
 
 var KeystoreDir = filepath.Join(os.Getenv("PWD"), "data/keystore")
 var RegistrationBlockRate uint64
