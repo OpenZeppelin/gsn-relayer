@@ -8,8 +8,8 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
 	"firebase.google.com/go"
-  "golang.org/x/net/context"
-  "cloud.google.com/go/firestore"
+	"golang.org/x/net/context"
+	"cloud.google.com/go/firestore"
 	"io/ioutil"
 	"librelay"
 	"librelay/txstore"
@@ -85,16 +85,16 @@ func firebaseSetup() {
 
 	conf := &firebase.Config{ProjectID: "gsn-relayer"}
 
-  app, err := firebase.NewApp(firebaseContext, conf)
+	app, err := firebase.NewApp(firebaseContext, conf)
 	if err != nil {
-	  	log.Println(err)
-	  	return
+			log.Println(err)
+			return
 	}
 
 	firebaseClient, err = app.Firestore(firebaseContext)
 	if err != nil {
-	  log.Println(err)
-	  return
+		log.Println(err)
+		return
 	}
 
 	log.Println("Setup Firebase to report for relayerID: ", relayerID)
@@ -112,14 +112,14 @@ func firebaseStore(userAgent string) {
 	log.Println("FirebaseStore request from: ", userAgent)
 
 	_, _, err := firebaseClient.Collection("requests").Add(firebaseContext, map[string]interface{}{
-  	"relayerID": relayerID,
-  	"userAgent":  userAgent,
-  	"timestamp": time.Now(),
-  })
+		"relayerID": relayerID,
+		"userAgent":  userAgent,
+		"timestamp": time.Now(),
+	})
 
-  if err != nil {
-  	log.Println("Firebase store failed: ", err)
-  }
+	if err != nil {
+		log.Println("Firebase store failed: ", err)
+	}
 }
 
 // http.HandlerFunc wrapper to assure we have enough balance to operate, and server already has stake and registered
