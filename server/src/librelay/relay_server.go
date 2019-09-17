@@ -43,6 +43,7 @@ type RelayTransactionRequest struct {
 	RelayMaxNonce   big.Int
 	RelayFee        big.Int
 	RelayHubAddress common.Address
+	UserAgent			  string // This field is optional
 }
 
 type SetHubRequest struct {
