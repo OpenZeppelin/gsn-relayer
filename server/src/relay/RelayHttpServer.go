@@ -7,6 +7,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
+	firebase "firebase.google.com/go"
+  //"google.golang.org/api/option"
+  "golang.org/x/net/context"
 	"io/ioutil"
 	"librelay"
 	"librelay/txstore"
@@ -45,6 +48,8 @@ func main() {
 
 	configRelay(parseCommandLine())
 
+	configFirebase()
+
 	server = &http.Server{Addr: ":" + relay.GetPort(), Handler: nil}
 
 	http.HandleFunc("/relay", assureRelayReady(relayHandler))
@@ -64,7 +69,35 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
 
+func configFirebase() {
+	log.Println("configuring firebase")
+
+	// Use the application default credentials
+	ctx := context.Background()
+
+	conf := &firebase.Config{ProjectID: "gsn-relayer"}
+
+  app, err := firebase.NewApp(ctx, conf)
+	if err != nil {
+	  log.Fatalln(err)
+	}
+
+	client, err := app.Firestore(ctx)
+	if err != nil {
+	  log.Fatalln(err)
+	}
+	defer client.Close()
+
+  _, _, err = client.Collection("users").Add(ctx, map[string]interface{}{
+        "first": "Ada",
+        "last":  "Lovelace",
+        "born":  1815,
+  })
+  if err != nil {
+          log.Fatalf("Failed adding alovelace: %v", err)
+  }
 }
 
 // http.HandlerFunc wrapper to assure we have enough balance to operate, and server already has stake and registered

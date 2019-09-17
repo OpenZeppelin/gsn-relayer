@@ -55,7 +55,7 @@ $(ETHFILE): Makefile
 	touch $(ETHFILE)
 
 go-get-deps: $(RELAYHUB_BINDING) $(ETHFILE)
-	go get -v code.cloudfoundry.org/clock github.com/syndtr/goleveldb/leveldb
+	go get -v code.cloudfoundry.org/clock github.com/syndtr/goleveldb/leveldb firebase.google.com/go
 
 go-get-xgo:
 	go get github.com/karalabe/xgo
