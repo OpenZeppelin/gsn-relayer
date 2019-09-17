@@ -2,6 +2,12 @@
 .DS_Store
 /node_modules/
 /server/src/github.com/ethereum/go-ethereum/
+/server/src/cloud.google.com/*
+/server/src/firebase.google.com/*
+/server/src/go.opencensus.io/*
+/server/src/golang.org/*
+/server/src/google.golang.org/*
+/server/src/gopkg.in/*
 /.vscode/settings.json
 /.idea/
 /server/pkg/darwin_amd64/

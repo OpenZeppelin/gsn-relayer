@@ -7,6 +7,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
+	"firebase.google.com/go"
+	"golang.org/x/net/context"
+	"cloud.google.com/go/firestore"
 	"io/ioutil"
 	"librelay"
 	"librelay/txstore"
@@ -37,13 +40,21 @@ var stopListeningToRelayRemoved chan bool
 
 var timeUnit time.Duration
 
+var firebaseClient *firestore.Client
+var firebaseContext context.Context
+
 var minimumRelayBalance = big.NewInt(1e17) // 0.1 eth
+
+var relayerID = os.Getenv("RELAYER_ID")
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	log.Println("RelayHttpServer starting. version:", VERSION)
 
 	configRelay(parseCommandLine())
+
+	firebaseSetup()
+	defer firebaseClient.Close()
 
 	server = &http.Server{Addr: ":" + relay.GetPort(), Handler: nil}
 
@@ -64,7 +75,51 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
 
+func firebaseSetup() {
+	log.Println("configuring firebase")
+
+	// Use the application default credentials
+	firebaseContext = context.Background()
+
+	conf := &firebase.Config{ProjectID: "gsn-relayer"}
+
+	app, err := firebase.NewApp(firebaseContext, conf)
+	if err != nil {
+			log.Println(err)
+			return
+	}
+
+	firebaseClient, err = app.Firestore(firebaseContext)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("Set up Firebase to report for relayerID: ", relayerID)
+}
+
+func firebaseStore(userAgent string) {
+	if firebaseClient == nil || firebaseContext == nil {
+		log.Println("Firebase not set up, skipping store")
+		return
+	}
+
+	if len(userAgent) == 0 {
+		userAgent = "unknown-agent"
+	}
+	log.Println("FirebaseStore request from: ", userAgent)
+
+	_, _, err := firebaseClient.Collection("requests").Add(firebaseContext, map[string]interface{}{
+		"relayerID": relayerID,
+		"userAgent":  userAgent,
+		"timestamp": time.Now(),
+	})
+
+	if err != nil {
+		log.Println("Firebase store failed: ", err)
+	}
 }
 
 // http.HandlerFunc wrapper to assure we have enough balance to operate, and server already has stake and registered
@@ -154,6 +209,9 @@ func relayHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("{\"error\":\"" + err.Error() + "\"}"))
 		return
 	}
+
+	firebaseStore(request.UserAgent)
+
 	signedTx, err := relay.CreateRelayTransaction(*request)
 	if err != nil {
 		log.Println("Failed to relay")
