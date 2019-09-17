@@ -97,7 +97,7 @@ func firebaseSetup() {
 		return
 	}
 
-	log.Println("Setup Firebase to report for relayerID: ", relayerID)
+	log.Println("Set up Firebase to report for relayerID: ", relayerID)
 }
 
 func firebaseStore(userAgent string) {
