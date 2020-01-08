@@ -1,4 +1,6 @@
-# GSN Relayer server (forked from tabookey-gasless)
+# GSN Relayer server
+
+_Forked from tabookey-gasless_
 
 ## Build
 
