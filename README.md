@@ -1,6 +1,6 @@
 # GSN Relayer server
 
-_Forked from tabookey-gasless_
+_Forked from tabookey-gasless_. This version adds, on top of the vanilla relayer, user-agent tracking using Firebase.
 
 ## Build
 
