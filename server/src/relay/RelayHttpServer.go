@@ -4,9 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/params"
 	"io/ioutil"
 	"librelay"
 	"librelay/txstore"
@@ -17,13 +14,17 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/params"
 )
 
-const VERSION = "0.4.4-oz"
+const VERSION = "0.4.6"
 
 var KeystoreDir = filepath.Join(os.Getenv("PWD"), "data/keystore")
 var RegistrationBlockRate uint64
-var devMode bool                                                  // Whether we wait after calls to blockchain or return (almost) immediately. Usually when testing...
+var devMode bool // Whether we wait after calls to blockchain or return (almost) immediately. Usually when testing...
 
 var ready = false
 var removed = false
