@@ -345,7 +345,8 @@ func (relay *RelayServer) BlockCountSinceRegistration() (count uint64, err error
 		return
 	}
 	// We only care about the last registration event
-	for iter.Next() {}
+	for iter.Next() {
+	}
 	if (iter.Event == nil && !iter.Next()) ||
 		(bytes.Compare(iter.Event.Relay.Bytes(), relay.Address().Bytes()) != 0) ||
 		(iter.Event.TransactionFee.Cmp(relay.Fee) != 0) ||
@@ -455,7 +456,7 @@ func (relay *RelayServer) CreateRelayTransaction(request RelayTransactionRequest
 		errStr := fmt.Sprintln("EncodedFunction:", request.EncodedFunction, "From:", request.From.Hex(), "To:", request.To.Hex(),
 			"GasPrice:", request.GasPrice.String(), "GasLimit:", request.GasLimit.String(), "Nonce:", request.RecipientNonce.String(), "Fee:",
 			request.RelayFee.String(), "AppData:", hexutil.Encode(request.ApprovalData), "Sig:", hexutil.Encode(request.Signature))
-		errStr = errStr[:len(errStr) - 1]
+		errStr = errStr[:len(errStr)-1]
 		err = fmt.Errorf("canRelay() view function returned error code=%d. params:%s", res, errStr)
 		log.Println(err)
 		return
@@ -650,7 +651,7 @@ func (relay *RelayServer) sendDataTransaction(desc string, f func(*bind.Transact
 	return
 }
 
-const maxGasPrice = 100e9
+const maxGasPrice = 500e9
 const retryGasPricePercentageIncrease = 20
 
 func (relay *RelayServer) resendTransaction(tx *types.Transaction) (signedTx *types.Transaction, err error) {
@@ -844,7 +845,7 @@ func (relay *RelayServer) Close() (err error) {
  * @return Gas cost of encoded function as parameter in relayedCall
  * As per the yellowpaper, each non-zero byte costs 68 and zero byte costs 4
  */
-func getEncodedFunctionGas(encodedFunction string) (*big.Int){
+func getEncodedFunctionGas(encodedFunction string) *big.Int {
 	if strings.HasPrefix(encodedFunction, "0x") {
 		encodedFunction = encodedFunction[2:]
 	}
