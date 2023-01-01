@@ -16,3 +16,4 @@
 
 .openzeppelin/.session
 data/*
+.git/
